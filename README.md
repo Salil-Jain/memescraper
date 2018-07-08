@@ -1,6 +1,6 @@
 # memescraper
 
-Scraping program to download memes from https://www.reddit.com/r/dankmemes/
+Scraping program to download memes from https://old.reddit.com/r/dankmemes/
 
 # How to use #
 
