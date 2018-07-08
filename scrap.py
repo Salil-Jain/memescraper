@@ -4,7 +4,7 @@ import subprocess
 import time
 import sys
 
-urls="https://www.reddit.com/r/dankmemes/"
+urls="https://old.reddit.com/r/dankmemes/"
 
 i=0
 num = input("How many pages would you like to download(25 memes per page)?")
@@ -25,6 +25,7 @@ else :
 		link1=re.findall(pattern1,htmltext)
 		if(len(link1)==0):
 			print "Something went wrong for i = %d. trying again..."%i
+			time.sleep(2)
 		else:
-			urls = link1[0]
+			urls = link1[3]
 			i+=1
