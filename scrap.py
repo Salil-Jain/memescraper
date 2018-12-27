@@ -18,14 +18,14 @@ else :
 		htmltext=htmlfile.read()
 		titles=re.findall(pattern,htmltext)
 		for s in titles:
-			com = "wget " + s
+			com = "wget --no-check-certificate " + s
 			subprocess.call(com,shell=True)
 		regex1 = "next-button.+?\"(.+?)\""
 		pattern1 = re.compile(regex1)
 		link1=re.findall(pattern1,htmltext)
 		if(len(link1)==0):
 			print "Something went wrong for i = %d. trying again..."%i
-			time.sleep(2)
+			time.sleep(3)
 		else:
-			urls = link1[3]
+			urls = link1[0]
 			i+=1
