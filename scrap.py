@@ -9,37 +9,37 @@ import pandas as pd
 from bs4 import BeautifulSoup
 
 #a log functionality to restart scraping state as it was interrupted
-restart = "n"; #normal value for restart is no!
+restart = "n" #normal value for restart is no!
 if(os.path.isfile('../url_log.csv')):
 	#retreive the file
-	log = pd.read_csv('../url_log.csv');
-	urls = log.iloc[-1].values[0];
-	times = log.iloc[-1].values[1];
+	log = pd.read_csv('../url_log.csv')
+	urls = log.iloc[-1].values[0]
+	times = log.iloc[-1].values[1]
 	#option to restart!
-	print "log file detected! " ;
-	print urls + " was last saved at " + times;
-	restart = raw_input("Would you like to continue from last url in the log? (y/n)");
+	print "log file detected! " 
+	print urls + " was last saved at " + times
+	restart = raw_input("Would you like to continue from last url in the log? (y/n)")
 	if not isinstance(restart, str):
-		sys.exit('Please enter a valid string');
+		sys.exit('Please enter a valid string')
 	if (restart.lower() == "n"):
-		os.remove("../url_log.csv");
-		log = log[0:0]; #empty log
+		os.remove("../url_log.csv")
+		log = log[0:0] #empty log
 	elif(restart.lower() != "y"):
-		sys.exit("Please enter valid string");
+		sys.exit("Please enter valid string")
 else:
-	log = pd.DataFrame(columns = ['urls','times']);
-	print("No log file detected!");
+	log = pd.DataFrame(columns = ['urls','times'])
+	print("No log file detected!")
 
 #now, we can scrape any memes!
 if (restart.lower() == "n"):
-	subreddit = raw_input("Please enter the name of subreddit to scrape: ");
+	subreddit = raw_input("Please enter the name of subreddit to scrape: ")
 	if not isinstance(subreddit, str):
 		sys.exit('Please enter a valid string')
 
 	#the url of the website to be scraped!
 	urls="https://old.reddit.com/r/" + subreddit + "/"
 	times = time.strftime("%d-%m-%Y %H:%M:%S", time.localtime())
-	log = log.append(other = pd.Series([urls,times],index=log.columns),ignore_index = True);
+	log = log.append(other = pd.Series([urls,times],index=log.columns),ignore_index = True)
 
 
 # input the number of pages to scrape memes from!
@@ -54,17 +54,17 @@ else :
 			pattern=re.compile(these_regex)
 			htmlfile=urllib.urlopen(urls)
 			htmltext=htmlfile.read()
-			content = htmltext;
+			content = htmltext
 			#using soup to find names!
 			soup = BeautifulSoup(content,'lxml')
-			names = soup.find_all(["p","a"],{'class':'title','data-event-action':'title'});
+			names = soup.find_all(["p","a"],{'class':'title','data-event-action':'title'})
 			titles=re.findall(pattern,htmltext)
 			for j,s in enumerate(titles):
 				try:
-					com = "wget --no-check-certificate " + s + " -O \"" + names[j].get_text() + "\".jpg";
+					com = "wget --no-check-certificate " + s + " -O \"" + names[j].get_text() + "\".jpg"
 					subprocess.call(com,shell=True)
 				except:
-					com = "wget --no-check-certificate " + s;
+					com = "wget --no-check-certificate " + s
 					subprocess.call(com,shell=True)
 			regex1 = "next-button.+?\"(.+?)\""
 			pattern1 = re.compile(regex1)
@@ -75,10 +75,10 @@ else :
 			else:
 				urls = link1[0]
 				times = time.strftime("%d-%m-%Y %H:%M:%S", time.localtime())
-				log = log.append(other = pd.Series([urls,times],index=log.columns),ignore_index = True);
+				log = log.append(other = pd.Series([urls,times],index=log.columns),ignore_index = True)
 				i+=1
-		log.to_csv('../url_log.csv',mode = 'w',index=False);
+		log.to_csv('../url_log.csv',mode = 'w',index=False)
 	except KeyboardInterrupt as e:
-		print e;
-		print "saving log";
-		log.to_csv('../url_log.csv',mode = 'w',index=False);
+		print e
+		print "saving log"
+		log.to_csv('../url_log.csv',mode = 'w',index=False)
