@@ -11,22 +11,23 @@ from bs4 import BeautifulSoup
 #a log functionality to restart scraping state as it was interrupted
 restart = "n"; #normal value for restart is no!
 if(os.path.isfile('../url_log.csv')):
+	#retreive the file
 	log = pd.read_csv('../url_log.csv');
+	urls = log.iloc[-1].values[0];
+	times = log.iloc[-1].values[1];
 	#option to restart!
-	restart = raw_input("log file detected! Would you like to continue from last url in the log? (y/n)");
+	print "log file detected! " ;
+	print urls + " was last saved at " + times;
+	restart = raw_input("Would you like to continue from last url in the log? (y/n)");
 	if not isinstance(restart, str):
-		sys.exit('Please enter a valid string')
-	if (restart.lower() == "y"):
-		try:
-			urls = log.iloc[-1].values[1];
-		except:
-			urls = log.columns[1];
-		list_log = [];
-	elif (restart.lower() == "n"):
+		sys.exit('Please enter a valid string');
+	if (restart.lower() == "n"):
 		os.remove("../url_log.csv");
-	else:
+		log = log[0:0]; #empty log
+	elif(restart.lower() != "y"):
 		sys.exit("Please enter valid string");
 else:
+	log = pd.DataFrame(columns = ['urls','times']);
 	print("No log file detected!");
 
 #now, we can scrape any memes!
@@ -37,7 +38,8 @@ if (restart.lower() == "n"):
 
 	#the url of the website to be scraped!
 	urls="https://old.reddit.com/r/" + subreddit + "/"
-	list_log = [urls];
+	times = time.strftime("%d-%m-%Y %H:%M:%S", time.localtime())
+	log = log.append(other = pd.Series([urls,times],index=log.columns),ignore_index = True);
 
 
 # input the number of pages to scrape memes from!
@@ -72,12 +74,11 @@ else :
 				time.sleep(3)
 			else:
 				urls = link1[0]
-				list_log.append(urls);
+				times = time.strftime("%d-%m-%Y %H:%M:%S", time.localtime())
+				log = log.append(other = pd.Series([urls,times],index=log.columns),ignore_index = True);
 				i+=1
-		log = pd.Series(list_log);
-		log.to_csv('../url_log.csv',mode = 'a');
-	except Exception as e:
+		log.to_csv('../url_log.csv',mode = 'w',index=False);
+	except KeyboardInterrupt as e:
 		print e;
 		print "saving log";
-		log = pd.Series(list_log);
-		log.to_csv('../url_log.csv',mode = 'a');
+		log.to_csv('../url_log.csv',mode = 'w',index=False);
