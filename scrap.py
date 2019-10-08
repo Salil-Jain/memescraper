@@ -36,27 +36,27 @@ if (restart.lower() == "n"):
 		sys.exit('Please enter a valid string')
 
 	#the url of the website to be scraped!
-	urls="https://old.reddit.com/r/" + subreddit + "/"
+	urls = "https://old.reddit.com/r/" + subreddit + "/"
 	times = time.strftime("%d-%m-%Y %H:%M:%S", time.localtime())
 	log = log.append(other = pd.Series([urls,times],index=log.columns),ignore_index = True)
 
 
 # input the number of pages to scrape memes from!
-i=0
+i = 0
 num = input("How many pages would you like to download(25 memes per page)?")
-if num<1:
+if num < 1:
 	sys.exit("Number of pages should be > 0")
 else :
 	try:
-		while i<num:
-			htmlfile=urllib.urlopen(urls)
-			htmltext=htmlfile.read()
+		while i < num:
+			htmlfile = urllib.urlopen(urls)
+			htmltext = htmlfile.read()
 			content = htmltext
 
 			# regex to find urls
-			these_regex="data-url=\"(.+?)\""
-			pattern=re.compile(these_regex)
-			all_urls=re.findall(pattern,htmltext)
+			these_regex = "data-url=\"(.+?)\""
+			pattern = re.compile(these_regex)
+			all_urls = re.findall(pattern,htmltext)
 			
 			# regex to find names
 			names_regex = "data-event-action=\"title\".+?>(.+?)<"
@@ -72,15 +72,15 @@ else :
 					subprocess.call(com,shell=True)
 			regex1 = "next-button.+?\"(.+?)\""
 			pattern1 = re.compile(regex1)
-			link1=re.findall(pattern1,htmltext)
-			if(len(link1)==0):
+			link1 = re.findall(pattern1,htmltext)
+			if(len(link1) == 0):
 				print "Something went wrong for i = %d. trying again..."%i
 				time.sleep(3)
 			else:
 				urls = link1[0]
 				times = time.strftime("%d-%m-%Y %H:%M:%S", time.localtime())
 				log = log.append(other = pd.Series([urls,times],index=log.columns),ignore_index = True)
-				i+=1
+				i += 1
 		log.to_csv('../url_log.csv',mode = 'w',index=False)
 	except KeyboardInterrupt as e:
 		print e
