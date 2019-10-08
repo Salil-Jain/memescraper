@@ -6,7 +6,6 @@ import sys
 import os.path
 import os
 import pandas as pd
-from bs4 import BeautifulSoup
 
 #a log functionality to restart scraping state as it was interrupted
 restart = "n" #normal value for restart is no!
@@ -50,18 +49,23 @@ if num<1:
 else :
 	try:
 		while i<num:
-			these_regex="data-url=\"(.+?)\""
-			pattern=re.compile(these_regex)
 			htmlfile=urllib.urlopen(urls)
 			htmltext=htmlfile.read()
 			content = htmltext
-			#using soup to find names!
-			soup = BeautifulSoup(content,'lxml')
-			names = soup.find_all(["p","a"],{'class':'title','data-event-action':'title'})
-			titles=re.findall(pattern,htmltext)
-			for j,s in enumerate(titles):
+
+			# regex to find urls
+			these_regex="data-url=\"(.+?)\""
+			pattern=re.compile(these_regex)
+			all_urls=re.findall(pattern,htmltext)
+			
+			# regex to find names
+			names_regex = "data-event-action=\"title\".+?>(.+?)<"
+			names_pattern = re.compile(names_regex)
+			names = re.findall(names_pattern, htmltext)
+
+			for j,s in enumerate(all_urls):
 				try:
-					com = "wget --no-check-certificate " + s + " -O \"" + names[j].get_text() + "\".jpg"
+					com = "wget --no-check-certificate " + s + " -O \"" + names[j] + "\".jpg"
 					subprocess.call(com,shell=True)
 				except:
 					com = "wget --no-check-certificate " + s
